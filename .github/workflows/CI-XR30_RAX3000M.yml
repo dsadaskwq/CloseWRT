@@ -291,6 +291,7 @@ jobs:
           cd ./wrt/ && mkdir ./upload/
           cp -f ./.config ./upload/Config_"$WRT_TARGET"_"$WRT_VER"_"$WRT_DATE".txt
           if [[ $WRT_TEST != 'true' ]]; then
+            echo "改名"
             find ./bin/targets/ -iregex ".*\(buildinfo\|json\|manifest\|sha256sums\|packages\)$" -exec rm -rf {} +
             for TYPE in $WRT_TYPE ; do
               for FILE in $(find ./bin/targets/ -type f -iname "*$TYPE*.*") ; do
@@ -298,8 +299,10 @@ jobs:
                 NAME=$(basename $FILE | cut -d '.' -f 1 | grep -io "\($TYPE\).*")  # 获取文件名
                 # 判断 NAND 容量是否为 256MB
                 if [[ $WRT_NAND == '256MB' ]]; then
+                  echo "改名256MB"
                   NEW_FILE="${NAME}_256M.${EXT}"  # 文件名后添加 _256M
                 else
+                  echo "不改名"
                   NEW_FILE="${NAME}.${EXT}"
                 fi
                 mv -f $FILE ./upload/$NEW_FILE
