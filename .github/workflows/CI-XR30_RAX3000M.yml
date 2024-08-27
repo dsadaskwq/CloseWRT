@@ -289,21 +289,22 @@ jobs:
       - name: 打包固件
         run: |
           cd ./wrt/ && mkdir ./upload/
-
           cp -f ./.config ./upload/Config_"$WRT_TARGET"_"$WRT_VER"_"$WRT_DATE".txt
-
           if [[ $WRT_TEST != 'true' ]]; then
             find ./bin/targets/ -iregex ".*\(buildinfo\|json\|manifest\|sha256sums\|packages\)$" -exec rm -rf {} +
-
             for TYPE in $WRT_TYPE ; do
               for FILE in $(find ./bin/targets/ -type f -iname "*$TYPE*.*") ; do
-                EXT=$(basename $FILE | cut -d '.' -f 2-)
-                NAME=$(basename $FILE | cut -d '.' -f 1 | grep -io "\($TYPE\).*")
-                NEW_FILE="$WRT_VER"_"$NAME"_"$WRT_DATE"."$EXT"
+                EXT=$(basename $FILE | cut -d '.' -f 2-)  # 获取文件后缀
+                NAME=$(basename $FILE | cut -d '.' -f 1 | grep -io "\($TYPE\).*")  # 获取文件名
+                # 判断 NAND 容量是否为 256MB
+                if [[ $WRT_NAND == '256MB' ]]; then
+                  NEW_FILE="${NAME}_256M.${EXT}"  # 文件名后添加 _256M
+                else
+                  NEW_FILE="${NAME}.${EXT}"
+                fi
                 mv -f $FILE ./upload/$NEW_FILE
               done
             done
-
             find ./bin/targets/ -type f -exec mv -f {} ./upload/ \;
           fi
 
