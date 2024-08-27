@@ -298,7 +298,7 @@ jobs:
                 EXT=$(basename $FILE | cut -d '.' -f 2-)  # 获取文件后缀
                 NAME=$(basename $FILE | cut -d '.' -f 1 | grep -io "\($TYPE\).*")  # 获取文件名
                 # 判断 NAND 容量是否为 256MB
-                if [[ $WRT_NAND == "256MB" ]] ; then
+                if [[ "${{inputs.NAND}}" == "256MB" ]] ; then
                   echo "改名256MB"
                   NEW_FILE="${NAME}_256M.${EXT}"  # 文件名后添加 _256M
                 else
