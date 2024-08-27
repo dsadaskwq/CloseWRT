@@ -2,7 +2,7 @@
 #安装和更新软件包
 
 #删除自带软件包 （优先编译自带，所以需要删除才能升级）
-rm -rf $(find ../feeds/luci/ -type d -regex ".*\(luci-app-ssr-plus\|passwall\|aliyundrive-webdav\|openclash\|mosdns\|dockerman\|adguardhome\|alist\|luci-app-unblockneteasemusic\).*")
+rm -rf $(find ../feeds/luci/ -type d -regex ".*\(luci-theme-argon\|luci-app-ssr-plus\|passwall\|aliyundrive-webdav\|openclash\|mosdns\|dockerman\|adguardhome\|alist\|luci-app-unblockneteasemusic\).*")
 #删除自带核心packages 
 rm -rf $(find ../feeds/packages/ -type d -regex ".*\(alist\|golang\|mosdns\|chinadns-ng\|sing-box\|xray-core\|v2ray-core\|v2ray-plugin\|v2ray-geodata\|aliyundrive-webdav\).*")
 
