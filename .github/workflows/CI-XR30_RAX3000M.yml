@@ -209,12 +209,15 @@ jobs:
           cat $GITHUB_WORKSPACE/Config/xr30_rax3000m/xr30_rax3000m.config >> .config                       
           
           $GITHUB_WORKSPACE/Scripts/Settings.sh
-          #修改NADN容量选择
+          ##修改闪存为256M版本(这是针对原厂128闪存来的，但又要编译256M固件来的）
           if [[ $WRT_NAND == "256MB" ]] ; then
               ## 修改DTS的ubi为238MB的0x1ea00000
               sed -i 's/reg = <0x580000 0x7200000>/reg = <0x580000 0xee00000>/' ./target/linux/mediatek/files-5.4/arch/arm64/boot/dts/mediatek/mt7981-cmcc-xr30.dts
               ## mt7981.mk   修改define Device/cmcc_xr30中IMAGE_SIZE := 240128k
               sed -i '/define Device\/cmcc_xr30/,/endef/ s/IMAGE_SIZE := 116736k/IMAGE_SIZE := 240128k/' target/linux/mediatek/image/mt7981.mk
+              #rax3000m
+              sed -i 's/<0x580000 0x7200000>/<0x580000 0xee00000>/g' target/linux/mediatek/files-5.4/arch/arm64/boot/dts/mediatek/mt7981-cmcc-rax3000m.dts
+              sed -i '/define Device\/cmcc_rax3000m/,/endef/ s/IMAGE_SIZE := 116736k/IMAGE_SIZE := 240128k/' target/linux/mediatek/image/mt7981.mk
               echo "修改NAND容量为 ${WRT_NAND}"
           fi
           #取消mtwifi配置
