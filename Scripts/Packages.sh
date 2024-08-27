@@ -2,7 +2,7 @@
 #安装和更新软件包
 
 #删除自带软件包 （优先编译自带，所以需要删除才能升级）
-rm -rf $(find ../feeds/luci/ -type d -regex ".*\(luci-lib-nixio\|luci-theme-argon\|luci-app-ssr-plus\|passwall\|aliyundrive-webdav\|openclash\|mosdns\|dockerman\|adguardhome\|alist\|luci-app-unblockneteasemusic\).*")
+rm -rf $(find ../feeds/luci/ -type d -regex ".*\(luci-theme-argon\|luci-app-ssr-plus\|passwall\|aliyundrive-webdav\|openclash\|mosdns\|dockerman\|adguardhome\|alist\|luci-app-unblockneteasemusic\).*")
 #删除自带核心packages 
 rm -rf $(find ../feeds/packages/ -type d -regex ".*\(alist\|golang\|mosdns\|chinadns-ng\|sing-box\|xray-core\|v2ray-core\|v2ray-plugin\|v2ray-geodata\|aliyundrive-webdav\).*")
 
@@ -75,7 +75,7 @@ UPDATE_PACKAGE() {
 # git拉取子目录
 #svn export https://github.com/coolsnowwolf/luci/trunk/applications/luci-app-adblock ./feeds/luci/applications/luci-app-adblock
 UPDATE_PACKAGE "messense/aliyundrive-webdav" "main" "" "openwrt/aliyundrive-webdav openwrt/luci-app-aliyundrive-webdav"
-UPDATE_PACKAGE "immortalwrt/luci" "master" "" "libs/luci-lib-nixio"
+#UPDATE_PACKAGE "immortalwrt/luci" "master" "" "libs/luci-lib-nixio"
 
 
 # 正常git clone
