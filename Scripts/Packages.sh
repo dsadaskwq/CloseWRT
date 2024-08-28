@@ -75,7 +75,7 @@ UPDATE_PACKAGE() {
 # git拉取子目录
 #svn export https://github.com/coolsnowwolf/luci/trunk/applications/luci-app-adblock ./feeds/luci/applications/luci-app-adblock
 UPDATE_PACKAGE "messense/aliyundrive-webdav" "main" "" "openwrt/aliyundrive-webdav openwrt/luci-app-aliyundrive-webdav"
-UPDATE_PACKAGE "dsadaskwq/wrtluci" "main" "../feeds/packages/net/samba4" "samba4"
+#UPDATE_PACKAGE "dsadaskwq/wrtluci" "main" "../feeds/packages/net/samba4" "samba4"
 
 # 正常git clone
 #主题相关
