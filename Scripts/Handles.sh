@@ -40,8 +40,8 @@ if [ -d *"openclash"* ]; then
 
 	cd ./luci-app-openclash/root/etc/openclash/
 
-	#curl -sL -o Country.mmdb $GEO_MMDB && echo "Country.mmdb done!"
-	#curl -sL -o GeoSite.dat $GEO_SITE && echo "GeoSite.dat done!"
+	curl -sL -o Country.mmdb $GEO_MMDB && echo "Country.mmdb done!"
+	curl -sL -o GeoSite.dat $GEO_SITE && echo "GeoSite.dat done!"
 	#curl -sL -o GeoIP.dat $GEO_IP && echo "GeoIP.dat done!"
 
 	mkdir ./core/ && cd ./core/
