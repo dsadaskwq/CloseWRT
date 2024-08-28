@@ -94,7 +94,7 @@ UPDATE_PACKAGE "xiaorouji/openwrt-passwall-packages" "main"
 UPDATE_PACKAGE "sbwml/packages_lang_golang" "" "../feeds/packages/lang/golang"
 
 UPDATE_PACKAGE "dsadaskwq/wrtluci" "main"
-UPDATE_PACKAGE "animegasan/luci-app-wolplus" "main"
+#UPDATE_PACKAGE "animegasan/luci-app-wolplus" "main"
 UPDATE_PACKAGE "lwb1978/openwrt-gecoosac" "main"
 UPDATE_PACKAGE "muink/luci-app-tinyfilemanager" "master"
 UPDATE_PACKAGE "sbwml/luci-app-alist" "master"
