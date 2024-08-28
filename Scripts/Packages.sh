@@ -145,3 +145,4 @@ UPDATE_VERSION() {
 
 #UPDATE_VERSION "软件包名" "测试版，true，可选，默认为否"
 UPDATE_VERSION "sing-box" "true"
+UPDATE_VERSION "samba4" "true"
