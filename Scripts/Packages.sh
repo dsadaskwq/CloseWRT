@@ -75,7 +75,6 @@ UPDATE_PACKAGE() {
 # git拉取子目录
 #svn export https://github.com/coolsnowwolf/luci/trunk/applications/luci-app-adblock ./feeds/luci/applications/luci-app-adblock
 UPDATE_PACKAGE "messense/aliyundrive-webdav" "main" "" "openwrt/aliyundrive-webdav openwrt/luci-app-aliyundrive-webdav"
-#UPDATE_PACKAGE "immortalwrt/luci" "master" "" "libs/luci-lib-nixio"
 
 
 # 正常git clone
@@ -83,6 +82,7 @@ UPDATE_PACKAGE "messense/aliyundrive-webdav" "main" "" "openwrt/aliyundrive-webd
 UPDATE_PACKAGE "jerrykuku/luci-theme-argon" "master"
 UPDATE_PACKAGE "0x676e67/luci-theme-design" "js"
 UPDATE_PACKAGE "sirpdboy/luci-theme-kucat" "js"
+UPDATE_PACKAGE "sirpdboy/luci-app-advancedplus" "main"
 UPDATE_PACKAGE "derisamedia/luci-theme-alpha" "master"
 UPDATE_PACKAGE "animegasan/luci-app-alpha-config" "master"
 #留学
@@ -93,9 +93,7 @@ UPDATE_PACKAGE "xiaorouji/openwrt-passwall-packages" "main"
 #其他插件
 UPDATE_PACKAGE "sbwml/packages_lang_golang" "" "../feeds/packages/lang/golang"
 
-UPDATE_PACKAGE "VIKINGYFY/luci-app-advancedplus" "main"
-#UPDATE_PACKAGE "VIKINGYFY/luci-app-wolplus" "main"
-
+UPDATE_PACKAGE "animegasan/luci-app-wolplus" "main"
 UPDATE_PACKAGE "lwb1978/openwrt-gecoosac" "main"
 UPDATE_PACKAGE "muink/luci-app-tinyfilemanager" "master"
 UPDATE_PACKAGE "sbwml/luci-app-alist" "master"
