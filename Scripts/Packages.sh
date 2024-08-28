@@ -106,7 +106,7 @@ UPDATE_PACKAGE "padavanonly/luci-app-mwan3helper-chinaroute" "main"
 UPDATE_PACKAGE "tty228/luci-app-wechatpush" "master"
 UPDATE_PACKAGE "UnblockNeteaseMusic/luci-app-unblockneteasemusic" "$([[ $REPO_URL == *"lede"* ]] && echo "master" || echo "js")"
 UPDATE_PACKAGE "sirpdboy/netspeedtest" "master"
-UPDATE_PACKAGE "sirpdboy/luci-app-parentcontrol" "main"
+#UPDATE_PACKAGE "sirpdboy/luci-app-parentcontrol" "main"
 
 #更新软件包版本
 UPDATE_VERSION() {
