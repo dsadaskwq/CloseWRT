@@ -75,7 +75,7 @@ UPDATE_PACKAGE() {
 # git拉取子目录
 #svn export https://github.com/coolsnowwolf/luci/trunk/applications/luci-app-adblock ./feeds/luci/applications/luci-app-adblock
 UPDATE_PACKAGE "messense/aliyundrive-webdav" "main" "" "openwrt/aliyundrive-webdav openwrt/luci-app-aliyundrive-webdav"
-#UPDATE_PACKAGE "dsadaskwq/wrtluci" "main" "../feeds/packages/net/samba4" "samba4"
+#UPDATE_PACKAGE "dsadaskwq/wrtluci" "main" "../feeds/packages/net" "samba4"
 
 # 正常git clone
 #主题相关
@@ -94,6 +94,8 @@ UPDATE_PACKAGE "xiaorouji/openwrt-passwall-packages" "main"
 UPDATE_PACKAGE "sbwml/packages_lang_golang" "" "../feeds/packages/lang/golang"
 
 UPDATE_PACKAGE "dsadaskwq/wrtluci" "main"
+UPDATE_PACKAGE "dsadaskwq/luci-app-parentcontrol" "main"
+#UPDATE_PACKAGE "sirpdboy/luci-app-parentcontrol" "main"
 #UPDATE_PACKAGE "animegasan/luci-app-wolplus" "main"
 UPDATE_PACKAGE "lwb1978/openwrt-gecoosac" "main"
 UPDATE_PACKAGE "muink/luci-app-tinyfilemanager" "master"
@@ -106,7 +108,7 @@ UPDATE_PACKAGE "padavanonly/luci-app-mwan3helper-chinaroute" "main"
 UPDATE_PACKAGE "tty228/luci-app-wechatpush" "master"
 UPDATE_PACKAGE "UnblockNeteaseMusic/luci-app-unblockneteasemusic" "$([[ $REPO_URL == *"lede"* ]] && echo "master" || echo "js")"
 UPDATE_PACKAGE "sirpdboy/netspeedtest" "master"
-UPDATE_PACKAGE "sirpdboy/luci-app-parentcontrol" "main"
+
 
 #更新软件包版本
 UPDATE_VERSION() {
