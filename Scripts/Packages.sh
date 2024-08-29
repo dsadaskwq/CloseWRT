@@ -82,7 +82,7 @@ UPDATE_PACKAGE "messense/aliyundrive-webdav" "main" "" "openwrt/aliyundrive-webd
 UPDATE_PACKAGE "jerrykuku/luci-theme-argon" "master"
 UPDATE_PACKAGE "0x676e67/luci-theme-design" "js"
 UPDATE_PACKAGE "sirpdboy/luci-theme-kucat" "js"
-UPDATE_PACKAGE "sirpdboy/luci-app-advancedplus" "main"
+#UPDATE_PACKAGE "sirpdboy/luci-app-advancedplus" "main"
 UPDATE_PACKAGE "derisamedia/luci-theme-alpha" "master"
 UPDATE_PACKAGE "animegasan/luci-app-alpha-config" "master"
 #留学
@@ -94,7 +94,7 @@ UPDATE_PACKAGE "xiaorouji/openwrt-passwall-packages" "main"
 UPDATE_PACKAGE "sbwml/packages_lang_golang" "" "../feeds/packages/lang/golang"
 
 UPDATE_PACKAGE "dsadaskwq/wrtluci" "main"
-UPDATE_PACKAGE "animegasan/luci-app-wolplus" "main"
+#UPDATE_PACKAGE "animegasan/luci-app-wolplus" "main"
 UPDATE_PACKAGE "lwb1978/openwrt-gecoosac" "main"
 UPDATE_PACKAGE "muink/luci-app-tinyfilemanager" "master"
 UPDATE_PACKAGE "sbwml/luci-app-alist" "master"
