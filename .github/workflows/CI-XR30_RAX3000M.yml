@@ -10,7 +10,13 @@ on:
         default: 'Aabandon/immortalwrt-mt798x'
         required: true
         type: choice
-        options: [VIKINGYFY/mt798x-immortalwrt, hanwckf/immortalwrt-mt798x, padavanonly/immortalwrt-mt798x, Aabandon/immortalwrt-mt798x, NekokeCore/immortalwrt-mt798x]
+        options: [VIKINGYFY/mt798x-immortalwrt, hanwckf/immortalwrt-mt798x, padavanonly/immortalwrt-mt798x, Aabandon/immortalwrt-mt798x]
+      FEEDS:
+        description: 'luci packages软件源'
+        default: 'NekokeCore'
+        required: true
+        type: choice
+        options: [immortalwrt, NekokeCore]
       NAND:
         description: 'NAND闪存容量'
         default: '128MB'
@@ -72,6 +78,7 @@ jobs:
       WRT_ADJUST: ${{inputs.ADJUST}}
       WRT_TEST: ${{inputs.TEST}}
       WRT_NAND: ${{inputs.NAND}}
+      WRT_FEEDS: ${{inputs.FEEDS}}
       USE_IPK: ${{inputs.IPK}}
       USE_CPU_MHZ: ${{inputs.MHZ}}
       USE_MTWIFI_CFG: ${{inputs.MTWIFI_CFG}}
@@ -176,13 +183,20 @@ jobs:
       - name: 更新Feeds
         run: |
           cd ./wrt/
+          if [[ $WRT_FEEDS == "NekokeCore" ]] ; then
+              # 修改 feeds.conf.default 文件内容
+              # 将默认的 packages 和 luci 仓库地址替换为 NekokeCore 的仓库地址
+              sed -i 's|src-git-full packages https://github.com/immortalwrt/packages.git;openwrt-21.02|src-git-full packages https://github.com/NekokeCore/immortalwrt-mt798x-packages.git;openwrt-21.02|' feeds.conf.default
+              sed -i 's|src-git-full luci https://github.com/immortalwrt/luci.git;openwrt-21.02|src-git-full luci https://github.com/NekokeCore/immortalwrt-mt798x-luci.git;openwrt-21.02|' feeds.conf.default
+              echo "修改feeds.conf.default容量为 ${WRT_FEEDS}"
+          fi
           # 根据源码SOURCE内容选择补丁或者操作
           if [[ "${{inputs.SOURCE}}" == "padavanonly/immortalwrt-mt798x" ]]; then
             cp $GITHUB_WORKSPACE/Config/all/xr30-add-padavanonly.patch xr30-xr30emmc_padavanonly.patch
             git apply xr30-xr30emmc_padavanonly.patch
             #删除usb拨号
             rm -rf ./package/wwan/app/luci-app-usbmodem
-          elif [[ "${{inputs.SOURCE}}" == "hanwckf/immortalwrt-mt798x" || "${{inputs.SOURCE}}" == "NekokeCore/immortalwrt-mt798x" ]]; then
+          elif [[ "${{inputs.SOURCE}}" == "hanwckf/immortalwrt-mt798x" ]]; then
             cp $GITHUB_WORKSPACE/Config/all/xr30-xr30emmc_hanwckf.patch xr30-xr30emmc_hanwckf.patch
             git apply xr30-xr30emmc_hanwckf.patch
           fi
@@ -313,10 +327,11 @@ jobs:
           tag_name: ${{env.WRT_TARGET}}_${{env.WRT_VER}}_${{env.WRT_DATE}}
           files: ./wrt/upload/*.*
           body: |
-            源码：${{env.WRT_REPO}}
+            源码：${{env.WRT_REPO}}            
             分支：${{env.WRT_BRANCH}}
             平台：${{env.WRT_TARGET}}
             设备：${{env.WRT_TYPE}}
             地址：${{env.WRT_IP}}
             密码：${{env.WRT_PW}}
             闪存：${{env.WRT_NAND}}
+            feeds：${{env.WRT_FEEDS}
