@@ -334,4 +334,4 @@ jobs:
             地址：${{env.WRT_IP}}
             密码：${{env.WRT_PW}}
             闪存：${{env.WRT_NAND}}
-            feeds：${{env.WRT_FEEDS}
+            feeds：${{env.WRT_FEEDS}}
