@@ -228,10 +228,11 @@ jobs:
               ## 修改DTS的ubi为238MB的0x1ea00000
               sed -i 's/reg = <0x580000 0x7200000>/reg = <0x580000 0xee00000>/' ./target/linux/mediatek/files-5.4/arch/arm64/boot/dts/mediatek/mt7981-cmcc-xr30.dts
               ## mt7981.mk   修改define Device/cmcc_xr30中IMAGE_SIZE := 240128k
-              sed -i '/define Device\/cmcc_xr30/,/endef/ s/IMAGE_SIZE := 116736k/IMAGE_SIZE := 240128k/' target/linux/mediatek/image/mt7981.mk
+              ## 240128k=234.5  243712k=238
+              sed -i '/define Device\/cmcc_xr30/,/endef/ s/IMAGE_SIZE := 116736k/IMAGE_SIZE := 243712k/' target/linux/mediatek/image/mt7981.mk
               #rax3000m
               sed -i 's/<0x580000 0x7200000>/<0x580000 0xee00000>/g' target/linux/mediatek/files-5.4/arch/arm64/boot/dts/mediatek/mt7981-cmcc-rax3000m.dts
-              sed -i '/define Device\/cmcc_rax3000m/,/endef/ s/IMAGE_SIZE := 116736k/IMAGE_SIZE := 240128k/' target/linux/mediatek/image/mt7981.mk
+              sed -i '/define Device\/cmcc_rax3000m/,/endef/ s/IMAGE_SIZE := 116736k/IMAGE_SIZE := 243712k/' target/linux/mediatek/image/mt7981.mk
               echo "修改NAND容量为 ${WRT_NAND}"
           fi
           #取消mtwifi配置
