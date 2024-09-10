@@ -37,11 +37,6 @@ on:
         required: true
         default: true
         type: boolean
-      MHZ:
-        description: '在首页显示CPU频率'
-        required: true
-        default: false
-        type: boolean
       ADJUST:
         description: '内存低占用模式，默认关闭'
         default: 'false'
@@ -85,7 +80,6 @@ jobs:
       WRT_NAND: ${{inputs.NAND}}
       WRT_FEEDS: ${{inputs.FEEDS}}
       USE_IPK: ${{inputs.IPK}}
-      USE_CPU_MHZ: ${{inputs.MHZ}}
       USE_MTWIFI_CFG: ${{inputs.MTWIFI_CFG}}
       USE_EEPROM: ${{inputs.EEPROM}}
       USE_DOCKER: ${{inputs.DOCKER}}
@@ -245,16 +239,8 @@ jobs:
               sed -i 's/CONFIG_PACKAGE_lua-cjson=y/CONFIG_WIFI_NORMAL_SETTING=y/g' .config
               echo "取消mtwifi配置wifi，mtwifi=false!"
           fi
-          #加入首页cpu频率 会减慢首页加载
-          if [[ $USE_CPU_MHZ == "true" ]]; then
-             # 启用 CPU 频率的显示
-             sed -i 's/cpu_freq=""/cpu_freq="$(mhz | awk -F '\''cpu_MHz='\'' '\''{printf("%.fMHz",$2)}'\'')"/' package/emortal/autocore/files/generic/cpuinfo
-             echo "首页加入cpu频率!"
-          else
-             # 否则，禁用 CPU 频率的显示
-             sed -i "s/cpu_freq=\"\$(mhz | awk \-F 'cpu_MHz=' '{printf(\"\%.fMHz\",\$2)}')\"/cpu_freq=\"\"/g" package/emortal/autocore/files/generic/cpuinfo
-             echo "首页不显示cpu频率!"
-          fi
+          #cpu频率不显示
+          sed -i "s/cpu_freq=\"\$(mhz | awk \-F 'cpu_MHz=' '{printf(\"\%.fMHz\",\$2)}')\"/cpu_freq=\"\"/g" package/emortal/autocore/files/generic/cpuinfo
 
           #修改插件位置
           if [[ $USE_IPK == "true" ]] ; then
