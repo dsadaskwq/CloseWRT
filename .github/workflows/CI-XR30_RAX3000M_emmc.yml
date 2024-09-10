@@ -232,6 +232,11 @@ jobs:
           cat $GITHUB_WORKSPACE/Config/xr30_rax3000m_emmc/xr30_rax3000m_emmc.config >> .config                       
           
           $GITHUB_WORKSPACE/Scripts/Settings.sh
+          #xr30 加入luci-i18n-samba4-zh-cn
+          sed -i '/define Device\/cmcc_xr30-emmc/,/endef/ s/luci-app-samba4/luci-app-samba4 luci-i18n-samba4-zh-cn/' target/linux/mediatek/image/mt7981.mk
+          #rax3000m
+          sed -i '/define Device\/cmcc_rax3000m/,/endef/ s/luci-app-samba4/luci-app-samba4 luci-i18n-samba4-zh-cn/' target/linux/mediatek/image/mt7981.mk
+
           #取消mtwifi配置
           if [[ $USE_MTWIFI_CFG == "false" ]] ; then
               sed -i 's/CONFIG_PACKAGE_luci-app-mtwifi-cfg=y/CONFIG_PACKAGE_luci-app-mtk=y/g' .config
