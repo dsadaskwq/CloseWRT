@@ -209,7 +209,8 @@ jobs:
           fi
           if [[ "${{inputs.SOURCE}}" != "padavanonly/immortalwrt-mt798x" ]]; then
             #加入applications
-            cp -r $GITHUB_WORKSPACE/Config/applications ./package/mtk
+            #cp -r $GITHUB_WORKSPACE/Config/applications ./package/mtk
+            echo "处理 applications"
           fi
           ./scripts/feeds update -a
           ./scripts/feeds install -a          
