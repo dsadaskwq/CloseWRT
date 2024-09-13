@@ -290,7 +290,7 @@ jobs:
         if: env.WRT_TEST != 'true'
         run: |
           cd ./wrt/
-          make defconfig
+          make defconfig -j$(nproc)
           make download -j$(nproc)
 
       - name: 编译固件
@@ -298,7 +298,7 @@ jobs:
         run: |
           cd ./wrt/
 
-          make -j$(nproc) || make -j1 V=s
+          make -j$(($(nproc)+1)) || make -j$(nproc) || make -j1 V=s
 
       - name: 机器信息
         run: |
