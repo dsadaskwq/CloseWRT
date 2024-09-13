@@ -13,6 +13,9 @@ https://github.com/padavanonly/immortalwrt-mt798x.git
 AABANDON源码：
 https://github.com/Aabandon/immortalwrt-mt798x.git
 
+lgs2007m:
+https://github.com/lgs2007m
+
 # 固件简要说明：
 
 固件每天早上4点自动编译。
