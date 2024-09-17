@@ -89,6 +89,7 @@ UPDATE_PACKAGE "animegasan/luci-app-alpha-config" "master"
 UPDATE_PACKAGE "vernesong/OpenClash" "dev" "" "luci-app-openclash"
 UPDATE_PACKAGE "xiaorouji/openwrt-passwall" "main"
 UPDATE_PACKAGE "xiaorouji/openwrt-passwall-packages" "main"
+UPDATE_PACKAGE "morytyann/OpenWrt-mihomo" "main"
 #UPDATE_PACKAGE "fw876/helloworld" "master"
 #其他插件
 UPDATE_PACKAGE "sbwml/packages_lang_golang" "" "../feeds/packages/lang/golang"
