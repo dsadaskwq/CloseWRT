@@ -48,6 +48,7 @@ on:
         default: false
         type: boolean
       PACKAGE:
+        description: '添加插件'
         required: false
         type: string
       TEST:
@@ -341,7 +342,10 @@ jobs:
             平台：${{env.WRT_TARGET}}
             设备：${{env.WRT_TYPE}}
             地址：${{env.WRT_IP}}
-            密码：${{env.WRT_PW}}           
+            密码：${{env.WRT_PW}}  
+            添加插件: ${{env.WRT_PACKAGE}}
             feeds：${{env.WRT_FEEDS}}
             EEPROM：${{env.USE_EEPROM}}
             DOCKER: ${{env.USE_DOCKER}}
+            
+            
