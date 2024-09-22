@@ -202,7 +202,7 @@ jobs:
             git apply xr30-xr30emmc_padavanonly.patch
             #删除usb拨号 或者加入汉化usb拨号
             rm -rf ./package/wwan/app/luci-app-usbmodem
-            sed -i 's/luci-app-usbmodem/luci-app-usbmodem luci-i18n-usbmodem-zh-cn/g' target/linux/mediatek/image/mt7981.mk
+            #sed -i 's/luci-app-usbmodem/luci-app-usbmodem luci-i18n-usbmodem-zh-cn/g' target/linux/mediatek/image/mt7981.mk
           fi
           if [[ "${{inputs.SOURCE}}" != "padavanonly/immortalwrt-mt798x" ]]; then
             #加入applications
