@@ -7,10 +7,10 @@ on:
     inputs:
       SOURCE:
         description: '源码'
-        default: 'padavanonly/immortalwrt-mt798x'
+        default: 'padavanonly/immortalwrt-mt798x-23.05'
         required: true
         type: choice
-        options: [VIKINGYFY/mt798x-immortalwrt, hanwckf/immortalwrt-mt798x, padavanonly/immortalwrt-mt798x, Aabandon/immortalwrt-mt798x]
+        options: [padavanonly/immortalwrt-mt798x-23.05]
       EEPROM:
         description: 'eeprom文件 and MAC'  #off不使用高功率eeprom
         required: true
