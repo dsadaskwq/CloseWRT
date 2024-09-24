@@ -1,0 +1,332 @@
+name: CI-XR30_23.05
+
+# CI计划
+on:
+  # 手动编译
+  workflow_dispatch:
+    inputs:
+      SOURCE:
+        description: '源码'
+        default: 'padavanonly/immortalwrt-mt798x'
+        required: true
+        type: choice
+        options: [VIKINGYFY/mt798x-immortalwrt, hanwckf/immortalwrt-mt798x, padavanonly/immortalwrt-mt798x, Aabandon/immortalwrt-mt798x]
+      EEPROM:
+        description: 'eeprom文件 and MAC'  #off不使用高功率eeprom
+        required: true
+        default: '360t7_eeprom' 
+        type: choice
+        options: [360t7_eeprom, nx30pro_eeprom, off_false]
+      WIFI:
+        description: '修改默认WIFI名称'
+        required: true
+        default: 'Mediatek'
+      MTWIFI_CFG:
+        description: '使用mtwifi无线界面'
+        required: true
+        default: true
+        type: boolean     
+      IPK:
+        description: '调整IPK插件布局'
+        required: true
+        default: true
+        type: boolean
+      ADJUST:
+        description: '内存低占用模式，默认关闭'
+        default: 'false'
+        required: true
+        type: boolean
+      DOCKER:
+        description: '添加 docker容器'
+        required: true
+        default: false
+        type: boolean
+      PACKAGE:
+        description: '添加插件'
+        required: false
+        type: string
+      TEST:
+        description: '仅输出配置文件，不编译固件'
+        default: 'false'
+        required: true
+        type: boolean
+
+# CI权限
+permissions: write-all
+
+# CI任务
+jobs:
+  wrt_core:
+    name: MTK-7981
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      WRT_TARGET: MTK-7981
+      WRT_THEME: argon
+      WRT_NAME: Immortalwrt
+      WRT_WIFI: ${{inputs.WIFI}}
+      WRT_IP: 192.168.2.1
+      WRT_PW: 无
+      WRT_REPO: https://github.com/${{inputs.SOURCE}}.git
+      WRT_BRANCH: ${{ inputs.SOURCE == 'VIKINGYFY/mt798x-immortalwrt' && 'main' || inputs.SOURCE == 'Aabandon/immortalwrt-mt798x' && 'test' || 'openwrt-21.02' }}
+      WRT_PACKAGE: ${{inputs.PACKAGE}}
+      WRT_ADJUST: ${{inputs.ADJUST}}
+      WRT_TEST: ${{inputs.TEST}}
+      WRT_NAND: ${{inputs.NAND}}
+      USE_IPK: ${{inputs.IPK}}
+      USE_MTWIFI_CFG: ${{inputs.MTWIFI_CFG}}
+      USE_EEPROM: ${{inputs.EEPROM}}
+      USE_DOCKER: ${{inputs.DOCKER}}
+      
+    steps:
+      - name: 检出项目代码
+        uses: actions/checkout@main
+
+      - name: 释放磁盘空间
+        uses: endersonmenezes/free-disk-space@main
+        with:
+          remove_android: true
+          remove_dotnet: true
+          remove_haskell: true
+          remove_tool_cache: true
+          remove_swap: true
+          remove_packages: "android* azure* clang* dotnet* firefox* ghc* golang* google* libclang* libgl1* lld* llvm* \
+            microsoft* mongodb* mono* mysql* nodejs* openjdk* php* postgresql* powershell* snap* temurin* yarn* zulu*"
+          remove_packages_one_command: true
+          remove_folders: "/etc/apt/sources.list.d* /etc/mono* /etc/mysql* /usr/include/linux/android* /usr/lib/llvm* /usr/lib/mono* \
+            /usr/local/lib/android* /usr/local/lib/node_modules* /usr/local/share/chromium* /usr/local/share/powershell* \
+            /usr/local/share/vcpkg/ports/azure* /usr/local/share/vcpkg/ports/google* /usr/local/share/vcpkg/ports/libpq/android* \
+            /usr/local/share/vcpkg/ports/llvm* /usr/local/share/vcpkg/ports/mysql* /usr/local/share/vcpkg/ports/snap* \
+            /usr/share/azure* /usr/share/dotnet* /usr/share/glade* /usr/share/miniconda* /usr/share/php* /usr/share/swift \
+            /var/lib/mysql* /var/log/azure*"
+          testing: false
+
+      - name: 初始化环境
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          docker rmi $(docker images -q)
+          sudo -E apt -yqq update
+          sudo -E apt -yqq full-upgrade
+          sudo -E apt -yqq autoremove --purge
+          sudo -E apt -yqq autoclean
+          sudo -E apt -yqq clean
+          sudo -E apt -yqq install dos2unix libfuse-dev
+          sudo bash -c 'bash <(curl -sL https://build-scripts.immortalwrt.org/init_build_environment.sh)'
+          sudo -E systemctl daemon-reload
+          sudo -E timedatectl set-timezone "Asia/Shanghai"
+
+      - name: 初始化值
+        run: |
+          export WRT_DATE=$(TZ=UTC-8 date +"%y.%m.%d_%H.%M.%S")
+          export WRT_CI=$(basename $GITHUB_WORKSPACE)
+          export WRT_VER=$(echo $WRT_REPO | cut -d '/' -f 4)-$WRT_BRANCH
+          export WRT_TYPE=$(sed -n "1{s/^#//;s/\r$//;p;q}" $GITHUB_WORKSPACE/Config/all/7981_usb.config)
+
+          echo "WRT_DATE=$WRT_DATE" >> $GITHUB_ENV
+          echo "WRT_CI=$WRT_CI" >> $GITHUB_ENV
+          echo "WRT_VER=$WRT_VER" >> $GITHUB_ENV
+          echo "WRT_TYPE=$WRT_TYPE" >> $GITHUB_ENV
+
+      - name: 克隆代码
+        run: |
+          git clone --depth=1 --single-branch --branch $WRT_BRANCH $WRT_REPO ./wrt/
+
+          cd ./wrt/ && echo "WRT_HASH=$(git log -1 --pretty=format:'%h')" >> $GITHUB_ENV
+
+      - name: 检查脚本
+        run: |
+          find ./ -maxdepth 3 -type f -iregex ".*\(txt\|sh\)$" -exec dos2unix {} \; -exec chmod +x {} \;
+
+      - name: 检查补丁
+        run: |
+          if [ -f "$GITHUB_WORKSPACE/Patches/Patches.sh" ]; then
+            $GITHUB_WORKSPACE/Patches/Patches.sh
+          else
+            echo "没有需要安装的补丁！"
+          fi
+
+      - name: 检查缓存
+        if: env.WRT_TEST != 'true'
+        id: check-cache
+        uses: actions/cache@main
+        with:
+          key: ${{env.WRT_TARGET}}-${{env.WRT_VER}}-${{env.WRT_HASH}}
+          path: |
+            ./wrt/.ccache
+            ./wrt/staging_dir/host*
+            ./wrt/staging_dir/tool*
+
+      - name: 更新缓存
+        if: env.WRT_TEST != 'true'
+        run: |
+          if ${{steps.check-cache.outputs.cache-hit == 'true'}}; then
+            sed -i 's/ $(tool.*\/stamp-compile)//g' ./wrt/Makefile
+            sed -i 's/ $(tool.*\/stamp-install)//g' ./wrt/Makefile
+
+            echo "工具链跳过完成！"
+          else
+            gh extension install actions/gh-actions-cache
+
+            CACHE_LIST=$(gh actions-cache list --key "$WRT_TARGET-$WRT_VER" | cut -f 1)
+            for CACHE_KEY in $CACHE_LIST; do
+               gh actions-cache delete $CACHE_KEY --confirm
+            done
+
+            echo "缓存清理完成！"
+          fi
+
+      - name: 更新Feeds
+        run: |
+          cd ./wrt/
+          # 根据源码SOURCE内容选择补丁或者操作
+          if [[ "${{inputs.SOURCE}}" == "padavanonly/immortalwrt-mt798x" ]]; then
+            cp $GITHUB_WORKSPACE/Config/xr30_rax3000m_emmc/cmcc-xr30_xr30-emmc.patch xr30-xr30emmc_padavanonly.patch
+            git apply xr30-xr30emmc_padavanonly.patch
+            #删除usb拨号 或者加入汉化usb拨号
+            rm -rf ./package/wwan/app/luci-app-usbmodem
+            #sed -i 's/luci-app-usbmodem/luci-app-usbmodem luci-i18n-usbmodem-zh-cn/g' target/linux/mediatek/image/mt7981.mk
+          fi
+          if [[ "${{inputs.SOURCE}}" != "padavanonly/immortalwrt-mt798x" ]]; then
+            #加入applications
+            #cp -r $GITHUB_WORKSPACE/Config/applications ./package/mtk
+            echo "处理 applications"
+          fi
+          ./scripts/feeds update -a
+          ./scripts/feeds install -a          
+          
+
+      - name: 自定义包
+        run: |
+          cd ./wrt/package/
+          ls
+          $GITHUB_WORKSPACE/Scripts/Packages.sh
+          ls
+          $GITHUB_WORKSPACE/Scripts/Handles.sh
+
+      - name: 自定义设置
+        run: |
+          cd ./wrt/
+          rm -rf ./tmp* ./.config*
+          cat $GITHUB_WORKSPACE/Config/xr30_rax3000m_emmc/xr30_rax3000m_emmc.config >> .config                       
+          
+          $GITHUB_WORKSPACE/Scripts/Settings.sh
+          #xr30 加入luci-i18n-samba4-zh-cn
+          sed -i '/define Device\/cmcc_xr30-emmc/,/endef/ s/luci-app-samba4/luci-app-samba4 luci-i18n-samba4-zh-cn/' target/linux/mediatek/image/mt7981.mk
+          #rax3000m
+          sed -i '/define Device\/cmcc_rax3000m/,/endef/ s/luci-app-samba4/luci-app-samba4 luci-i18n-samba4-zh-cn/' target/linux/mediatek/image/mt7981.mk
+
+          #取消mtwifi配置
+          if [[ $USE_MTWIFI_CFG == "false" ]] ; then
+              sed -i 's/CONFIG_PACKAGE_luci-app-mtwifi-cfg=y/CONFIG_PACKAGE_luci-app-mtk=y/g' .config
+              sed -i 's/CONFIG_PACKAGE_luci-i18n-mtwifi-cfg-zh-cn=y/CONFIG_PACKAGE_luci-i18n-mtk-zh-cn=y/g' .config
+              sed -i 's/CONFIG_PACKAGE_mtwifi-cfg=y/CONFIG_PACKAGE_wifi-profile=y/g' .config
+              sed -i 's/CONFIG_PACKAGE_lua-cjson=y/CONFIG_WIFI_NORMAL_SETTING=y/g' .config
+              echo "取消mtwifi配置wifi，mtwifi=false!"
+          fi
+          #cpu频率不显示
+          sed -i "s/cpu_freq=\"\$(mhz | awk \-F 'cpu_MHz=' '{printf(\"\%.fMHz\",\$2)}')\"/cpu_freq=\"\"/g" package/emortal/autocore/files/generic/cpuinfo
+
+          #修改插件位置
+          if [[ $USE_IPK == "true" ]] ; then
+              #部分插件调整到status 状态
+              sed -i 's/services/status/g' ./package/feeds/luci/luci-app-nlbwmon/root/usr/share/luci/menu.d/luci-app-nlbwmon.json  || true
+              #sed -i 's/network/status/g' ./package/mtk/applications/luci-app-wrtbwmon/root/usr/share/luci/menu.d/luci-app-wrtbwmon.json  || true
+              #部分插件调整到nas 网络储存
+              sed -i 's/services/nas/g' ./package/luci-app-aliyundrive-webdav/luasrc/controller/*.lua  || true
+              sed -i 's/services/nas/g' ./package/luci-app-aliyundrive-webdav/luasrc/view/aliyundrive-webdav/*.htm  || true
+              sed -i 's/services/nas/g' ./package/feeds/luci/luci-app-wol/root/usr/share/luci/menu.d/luci-app-wol.json  || true
+              sed -i 's/services/nas/g' ./package/feeds/luci/luci-app-ksmbd/root/usr/share/luci/menu.d/luci-app-ksmbd.json  || true
+              sed -i 's/services/nas/g' ./package/feeds/luci/luci-app-qbittorrent/root/usr/share/luci/menu.d/luci-app-qbittorrent.json  || true              
+              #部分插件调整到vpn
+              sed -i 's/services/vpn/g' ./package/feeds/luci/luci-app-uugamebooster/luasrc/controller/*.lua  || true
+              sed -i 's/services/vpn/g' ./package/feeds/luci/luci-app-uugamebooster/luasrc/view/uugamebooster/*.htm  || true
+              #部分插件调整到network 网络
+              sed -i 's/services/network/g' ./package/mtk/applications/luci-app-eqos-mtk/root/usr/share/luci/menu.d/luci-app-eqos.json  || true
+              echo "修改插件位置!"
+          fi          
+          
+      - name: 使用的高功率eeprom并固定WiFi MAC地址
+        if: env.USE_EEPROM != 'off_false'
+        run: |
+          cp ./Config/xr30_rax3000m_emmc/"$USE_EEPROM".bin ./wrt/package/mtk/drivers/mt_wifi/files/mt7981-default-eeprom/MT7981_iPAiLNA_EEPROM.bin
+          cd ./wrt/
+          ## 创建一个辅助文件。文件内容是写入MAC地址到dat文件，固定wifi MAC地址
+          echo -e "\t\tlocal wifi0_mac=\"\$(mmc_get_mac_binary factory 0x04)\"
+          \t\tsed -i \"/^MacAddress=.*/ {s/.*/MacAddress=\$wifi0_mac/;b;}; \\\$aMacAddress=\$wifi0_mac\" /etc/wireless/mediatek/mt7981.dbdc.b0.dat
+          \t\tlocal wifi1_mac=\"\$(macaddr_setbit_la \$wifi0_mac)\"
+          \t\tsed -i \"/^MacAddress=.*/ {s/.*/MacAddress=\$wifi1_mac/;b;}; \\\$aMacAddress=\$wifi1_mac\" /etc/wireless/mediatek/mt7981.dbdc.b1.dat" > temp_insert.txt
+          ## 将文本内容写入02_network
+          sed -i '/mediatek_setup_macs()/,/\};/ {/cmcc,rax3000m-emmc)/ {n;n;n;r temp_insert.txt
+          }}' target/linux/mediatek/mt7981/base-files/etc/board.d/02_network
+    
+      - name: 设置 dockerman 容器
+        if: env.USE_DOCKER == 'true'
+        run: |
+          cd ./wrt/
+          echo -e "\nCONFIG_PACKAGE_luci-app-dockerman=y" >> .config
+
+      - name: 下载文件
+        if: env.WRT_TEST != 'true'
+        run: |
+          cd ./wrt/
+          make defconfig -j$(nproc)
+          make download -j$(nproc)
+
+      - name: 编译固件
+        if: env.WRT_TEST != 'true'
+        run: |
+          cd ./wrt/
+
+          make -j$(($(nproc)+1)) || make -j$(nproc) || make -j1 V=s
+
+      - name: 机器信息
+        run: |
+          cd ./wrt/
+
+          echo "======================="
+          lscpu | grep -E "name|Core|Thread"
+          echo "======================="
+          df -h
+          echo "======================="
+          du -h --max-depth=1
+          echo "======================="
+
+      - name: 打包固件
+        run: |
+          cd ./wrt/ && mkdir ./upload/
+
+          cp -f ./.config ./upload/Config_"$WRT_TARGET"_"$WRT_VER"_"$WRT_DATE".txt
+
+          if [[ $WRT_TEST != 'true' ]]; then
+            find ./bin/targets/ -iregex ".*\(buildinfo\|json\|manifest\|sha256sums\|packages\)$" -exec rm -rf {} +
+
+            for TYPE in $WRT_TYPE ; do
+              for FILE in $(find ./bin/targets/ -type f -iname "*$TYPE*.*") ; do
+                EXT=$(basename $FILE | cut -d '.' -f 2-)
+                NAME=$(basename $FILE | cut -d '.' -f 1 | grep -io "\($TYPE\).*")
+                NEW_FILE="$WRT_VER"_"$NAME"_"$WRT_DATE"."$EXT"
+                mv -f $FILE ./upload/$NEW_FILE
+              done
+            done
+
+            find ./bin/targets/ -type f -exec mv -f {} ./upload/ \;
+          fi
+
+      - name: 发布固件
+        uses: softprops/action-gh-release@master
+        with:
+          tag_name: ${{env.WRT_TARGET}}_${{env.WRT_VER}}_${{env.WRT_DATE}}
+          files: ./wrt/upload/*.*
+          body: |
+            源码：${{env.WRT_REPO}}            
+            分支：${{env.WRT_BRANCH}}
+            平台：${{env.WRT_TARGET}}
+            设备：${{env.WRT_TYPE}}
+            地址：${{env.WRT_IP}}
+            密码：${{env.WRT_PW}}  
+            添加插件: ${{env.WRT_PACKAGE}}
+            EEPROM：${{env.USE_EEPROM}}
+            DOCKER: ${{env.USE_DOCKER}}
+            
+            
