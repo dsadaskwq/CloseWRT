@@ -284,6 +284,10 @@ jobs:
           echo "======================="
           du -h --max-depth=1
           echo "======================="
+          echo "======================="
+          cd ./bin/targets/mediatek
+          ls
+          
 
       - name: 打包固件
         run: |
