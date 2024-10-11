@@ -25,6 +25,8 @@ UPDATE_PACKAGE() {
 UPDATE_PACKAGE "argon" "jerrykuku/luci-theme-argon" "master"
 UPDATE_PACKAGE "kucat" "sirpdboy/luci-theme-kucat" "js"
 
+UPDATE_PACKAGE "golang" "sbwml/packages_lang_golang" "23.x"	
+
 #UPDATE_PACKAGE "nekoclash" "Thaolga/luci-app-nekoclash" "main"
 UPDATE_PACKAGE "openclash" "vernesong/OpenClash" "dev" "pkg"
 UPDATE_PACKAGE "luci-app-passwall" "xiaorouji/openwrt-passwall" "main" "pkg"
@@ -54,7 +56,6 @@ if [[ $WRT_BRANCH == *"21.02"* ]]; then
     #删除自带核心packages 
     rm -rf $(find ../feeds/packages/ -type d -regex ".*\(chinadns-ng\|sing-box\|xray-core\|v2ray-core\|v2ray-plugin\|v2ray-geodata\).*")
     UPDATE_PACKAGE "luci-app-dockerman" "lisaac/luci-app-dockerman" "master"
-    UPDATE_PACKAGE "golang" "sbwml/packages_lang_golang" "23.x"	
 fi
 if [[ $WRT_BRANCH == *"23.05"* ]]; then
     #删除自带核心packages 
