@@ -242,6 +242,12 @@ jobs:
       - name: 使用的高功率eeprom并固定WiFi MAC地址
         if: env.USE_EEPROM != 'off_false'
         run: |
+          ls ./wrt/package
+          echo "测试!"
+          ls ./wrt/package/mtk
+          echo "测试!"
+          ls ./wrt/package/mtk/drivers
+          echo "测试!"
           ls ./wrt/package/mtk/drivers/mt_wifi/files
           echo "测试!"
           ls ./wrt/package/mtk/drivers/mt_wifi/files/mt7981-default-eeprom
