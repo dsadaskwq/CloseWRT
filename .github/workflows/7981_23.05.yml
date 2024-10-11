@@ -242,6 +242,8 @@ jobs:
       - name: 使用的高功率eeprom并固定WiFi MAC地址
         if: env.USE_EEPROM != 'off_false'
         run: |
+          ls
+          echo "测试!"
           ls ./wrt/package/mtk/drivers/mt_wifi/files/mt7981-default-eeprom
           cp ./Config/xr30_rax3000m_emmc/"$USE_EEPROM".bin ./wrt/package/mtk/drivers/mt_wifi/files/mt7981-default-eeprom/MT7981_iPAiLNA_EEPROM.bin
           
@@ -278,7 +280,7 @@ jobs:
           du -h --max-depth=1
           echo "======================="
           echo "======================="
-          cd ./bin/targets/mediatek/mt7981
+          #cd ./bin/targets/mediatek/mt7981
           ls
           
 
