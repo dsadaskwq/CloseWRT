@@ -68,7 +68,7 @@ jobs:
       WRT_IP: 192.168.2.1
       WRT_PW: 无
       WRT_REPO: https://github.com/${{inputs.SOURCE}}.git
-      WRT_BRANCH: ${{ inputs.SOURCE == 'VIKINGYFY/mt798x-immortalwrt' && 'main' || inputs.SOURCE == 'Aabandon/immortalwrt-mt798x' && 'test' || 'openwrt-21.02' }}
+      WRT_BRANCH: openwrt-23.05
       WRT_PACKAGE: ${{inputs.PACKAGE}}
       WRT_ADJUST: ${{inputs.ADJUST}}
       WRT_TEST: ${{inputs.TEST}}
