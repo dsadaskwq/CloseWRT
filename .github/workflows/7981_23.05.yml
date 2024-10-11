@@ -204,7 +204,7 @@ jobs:
         run: |
           cd ./wrt/
           rm -rf ./tmp* ./.config*
-          cat $GITHUB_WORKSPACE/Config/xr30_rax3000m_emmc/xr30_rax3000m_emmc.config >> .config                       
+          cat $GITHUB_WORKSPACE/Config/360t7/360t7.txt >> .config                       
           
           $GITHUB_WORKSPACE/Scripts/Settings.sh
 
