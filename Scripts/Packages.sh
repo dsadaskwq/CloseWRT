@@ -1,117 +1,66 @@
 #!/bin/bash
+
+
 #安装和更新软件包
-
-#删除自带软件包 （优先编译自带，所以需要删除才能升级）
-rm -rf $(find ../feeds/luci/ -type d -regex ".*\(homeproxy\|luci-theme-argon\|luci-app-ssr-plus\|passwall\|aliyundrive-webdav\|openclash\|mosdns\|dockerman\|adguardhome\|alist\|luci-app-unblockneteasemusic\).*")
-#删除自带核心packages 
-rm -rf $(find ../feeds/packages/ -type d -regex ".*\(samba4\|alist\|golang\|mosdns\|chinadns-ng\|sing-box\|xray-core\|v2ray-core\|v2ray-plugin\|v2ray-geodata\|aliyundrive-webdav\).*")
-
-##git仓库  "$4"可拉仓库子目录
 UPDATE_PACKAGE() {
-  # 参数检查
-  if [ "$#" -lt 1 ]; then
-    echo "Usage: UPDATE_PACKAGE <git_url> [branch] [target_directory] [subdirectory]"
-    return 1
-  fi
-  local git_url="$1"
-  local branch="$2"
-  local source_target_directory="$3"
-  local target_directory="$3"
-  local subdirectories="$4"
-  # 输出参数日志
-  echo "Git 仓库 URL: $git_url"
-  echo "分支: $branch"
-  echo "目标目录: $target_directory"
-  echo "子目录: $subdirectories"
-  
-  # 自动补全 git_url 前缀
-  if [[ ! "$git_url" =~ ^https:// ]]; then
-    git_url="https://github.com/${git_url}.git"
-  fi
+	local PKG_NAME=$1
+	local PKG_REPO=$2
+	local PKG_BRANCH=$3
+	local PKG_SPECIAL=$4
+	local REPO_NAME=$(echo $PKG_REPO | cut -d '/' -f 2)
 
-  # 检测是否为 git 子目录
-  if [ -n "$subdirectories" ]; then
-    target_directory=$(pwd)/repos/$(echo "$git_url" | awk -F'/' '{print $(NF-1)"-"$NF}')
-  fi
+	rm -rf $(find ../feeds/luci/ ../feeds/packages/ -maxdepth 3 -type d -iname "*$PKG_NAME*" -prune)
 
-  # 检查目标目录是否存在
-  if [ -d "$target_directory" ]; then
-    pushd "$target_directory" || return 1
-    git pull
-    popd
-  else
-    if [ -n "$branch" ]; then
-      git clone --depth=1 -b $branch $git_url $target_directory
-    else
-      git clone --depth=1 $git_url $target_directory
-    fi
-  fi
+	git clone --depth=1 --single-branch --branch $PKG_BRANCH "https://github.com/$PKG_REPO.git"
 
-  # 检查 source_target_directory 是否存在
-  if [ -n "$source_target_directory" ] && [ ! -d "$source_target_directory" ]; then
-    mkdir -p "$source_target_directory"
-    echo "创建目录 $source_target_directory"
-  fi
-
-  # 处理多个子目录
-  if [ -n "$subdirectories" ]; then
-    IFS=' ' read -r -a subdir_array <<< "$subdirectories"
-    for subdir in "${subdir_array[@]}"; do
-      cp -a $target_directory/$subdir ./$source_target_directory
-      echo "复制 $subdir 到 $source_target_directory"
-    done
-    rm -rf $target_directory
-    echo "删除repos目录"
-  fi
+	if [[ $PKG_SPECIAL == "pkg" ]]; then
+		cp -rf $(find ./$REPO_NAME/*/ -maxdepth 3 -type d -iname "*$PKG_NAME*" -prune) ./
+		rm -rf ./$REPO_NAME/
+	elif [[ $PKG_SPECIAL == "name" ]]; then
+		mv -f $REPO_NAME $PKG_NAME
+	fi
 }
 
-# 用法示例  "https://github.com/xxx/yyy" "分支名" "目标目录" "git子目录 多目录空格隔开"
-# UPDATE_PACKAGE "hanwckf/bl-mt798x" [branch] [target_directory] [subdirectory]
-# UPDATE_PACKAGE "hanwckf/bl-mt798x" "main" "package/luci-xxx" "uboot-mtk-20220606 uboot-mtk-20230718-09eda825"
-# UPDATE_PACKAGE "hanwckf/bl-mt798x" "" "package/luci-xxx" "uboot-mtk-20220606/xxx"
-# UPDATE_PACKAGE "hanwckf/bl-mt798x"
+#UPDATE_PACKAGE "包名" "项目地址" "项目分支" "pkg/name，可选，pkg为从大杂烩中单独提取包名插件；name为重命名为包名"
+UPDATE_PACKAGE "argon" "jerrykuku/luci-theme-argon" "master"
+UPDATE_PACKAGE "kucat" "sirpdboy/luci-theme-kucat" "js"
 
-  
-# git拉取子目录
-#svn export https://github.com/coolsnowwolf/luci/trunk/applications/luci-app-adblock ./feeds/luci/applications/luci-app-adblock
-UPDATE_PACKAGE "messense/aliyundrive-webdav" "main" "" "openwrt/aliyundrive-webdav openwrt/luci-app-aliyundrive-webdav"
-#UPDATE_PACKAGE "dsadaskwq/wrtluci" "main" "../feeds/packages/net" "samba4"
+#UPDATE_PACKAGE "nekoclash" "Thaolga/luci-app-nekoclash" "main"
+UPDATE_PACKAGE "openclash" "vernesong/OpenClash" "dev" "pkg"
+UPDATE_PACKAGE "luci-app-passwall" "xiaorouji/openwrt-passwall" "main" "pkg"
+UPDATE_PACKAGE "passwall" "xiaorouji/openwrt-passwall-packages" "main"
+#UPDATE_PACKAGE "ssr-plus" "fw876/helloworld" "master"
 
-# 正常git clone
-#主题相关
-UPDATE_PACKAGE "jerrykuku/luci-theme-argon" "master"
-UPDATE_PACKAGE "0x676e67/luci-theme-design" "js"
-UPDATE_PACKAGE "sirpdboy/luci-theme-kucat" "js"
-#UPDATE_PACKAGE "sirpdboy/luci-app-advancedplus" "main"
-UPDATE_PACKAGE "derisamedia/luci-theme-alpha" "master"
-UPDATE_PACKAGE "animegasan/luci-app-alpha-config" "master"
-#留学
-UPDATE_PACKAGE "vernesong/OpenClash" "dev" "" "luci-app-openclash"
-UPDATE_PACKAGE "xiaorouji/openwrt-passwall" "main"
-UPDATE_PACKAGE "xiaorouji/openwrt-passwall-packages" "main"
-#UPDATE_PACKAGE "fw876/helloworld" "master"
-if [[ $WRT_BRANCH == *"23.05"* ]]; then
-	UPDATE_PACKAGE "VIKINGYFY/homeproxy" "main"
+UPDATE_PACKAGE "luci-app-aliyundrive-webdav" "messense/aliyundrive-webdav" "main" "pkg"
+UPDATE_PACKAGE "mosdns" "sbwml/luci-app-mosdns" "v5"
+UPDATE_PACKAGE "alist" "sbwml/luci-app-alist" "main"
+
+UPDATE_PACKAGE "luci-app-advancedplus" "VIKINGYFY/luci-app-advancedplus" "main"
+UPDATE_PACKAGE "luci-app-gecoosac" "lwb1978/openwrt-gecoosac" "main"
+UPDATE_PACKAGE "luci-app-tailscale" "asvow/luci-app-tailscale" "main"
+UPDATE_PACKAGE "luci-app-wolplus" "VIKINGYFY/luci-app-wolplus" "main"
+UPDATE_PACKAGE "luci-app-tinyfilemanager" "muink/luci-app-tinyfilemanager" "master"
+UPDATE_PACKAGE "luci-app-adguardhome" "chenmozhijin/luci-app-adguardhome" "master"
+UPDATE_PACKAGE "luci-app-lucky" "gdy666/luci-app-lucky" "main"
+UPDATE_PACKAGE "netspeedtest" "sirpdboy/netspeedtest" "master"
+UPDATE_PACKAGE "luci-app-tailscale" "asvow/luci-app-tailscale" "main"
+UPDATE_PACKAGE "luci-app-wechatpush" "tty228/luci-app-wechatpush" "master"
+UPDATE_PACKAGE "luci-app-mwan3helper-chinaroute" "padavanonly/luci-app-mwan3helper-chinaroute" "main"
+
+
+
+
+if [[ $WRT_BRANCH == *"21.02"* ]]; then
+    #删除自带核心packages 
+    rm -rf $(find ../feeds/packages/ -type d -regex ".*\(chinadns-ng\|sing-box\|xray-core\|v2ray-core\|v2ray-plugin\|v2ray-geodata\).*")
+    UPDATE_PACKAGE "luci-app-dockerman" "lisaac/luci-app-dockerman" "master"
+    UPDATE_PACKAGE "golang" "sbwml/packages_lang_golang" "23.x"	
 fi
-#其他插件
-UPDATE_PACKAGE "sbwml/packages_lang_golang" "" "../feeds/packages/lang/golang"
-
-UPDATE_PACKAGE "dsadaskwq/wrtluci" "main"
-#UPDATE_PACKAGE "dsadaskwq/luci-app-parentcontrol" "main"
-UPDATE_PACKAGE "sirpdboy/luci-app-parentcontrol" "main"
-#UPDATE_PACKAGE "animegasan/luci-app-wolplus" "main"
-UPDATE_PACKAGE "lwb1978/openwrt-gecoosac" "main"
-UPDATE_PACKAGE "muink/luci-app-tinyfilemanager" "master"
-UPDATE_PACKAGE "sbwml/luci-app-alist"
-UPDATE_PACKAGE "sbwml/luci-app-mosdns" "v5"
-UPDATE_PACKAGE "chenmozhijin/luci-app-adguardhome" "master"
-UPDATE_PACKAGE "lisaac/luci-app-dockerman" "master"
-UPDATE_PACKAGE "gdy666/luci-app-lucky" "main"
-UPDATE_PACKAGE "padavanonly/luci-app-mwan3helper-chinaroute" "main"
-UPDATE_PACKAGE "tty228/luci-app-wechatpush" "master"
-UPDATE_PACKAGE "UnblockNeteaseMusic/luci-app-unblockneteasemusic" "$([[ $REPO_URL == *"lede"* ]] && echo "master" || echo "js")"
-UPDATE_PACKAGE "sirpdboy/netspeedtest" "master"
-UPDATE_PACKAGE "asvow/luci-app-tailscale" "main"
+if [[ $WRT_BRANCH == *"23.05"* ]]; then
+    #删除自带核心packages 
+    rm -rf $(find ../feeds/packages/ -type d -regex ".*\(alist\|mosdns\|aliyundrive-webdav\).*")
+	UPDATE_PACKAGE "homeproxy" "VIKINGYFY/homeproxy" "main"
+fi
 
 
 #更新软件包版本
@@ -134,7 +83,6 @@ UPDATE_VERSION() {
 		local PKG_VER=$(curl -sL "https://api.github.com/repos/$PKG_REPO/releases" | jq -r "map(select(.prerelease|$PKG_MARK)) | first | .tag_name")
 		local NEW_VER=$(echo $PKG_VER | sed "s/.*v//g; s/_/./g")
 		local NEW_HASH=$(curl -sL "https://codeload.github.com/$PKG_REPO/tar.gz/$PKG_VER" | sha256sum | cut -b -64)
-
 		local OLD_VER=$(grep -Po "PKG_VERSION:=\K.*" "$PKG_FILE")
 
 		echo "$OLD_VER $PKG_VER $NEW_VER $NEW_HASH"
@@ -151,4 +99,4 @@ UPDATE_VERSION() {
 
 #UPDATE_VERSION "软件包名" "测试版，true，可选，默认为否"
 UPDATE_VERSION "sing-box" "true"
-
+UPDATE_VERSION "aliyundrive-webdav" "true"
