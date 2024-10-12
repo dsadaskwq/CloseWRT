@@ -75,7 +75,7 @@ if [ -d "./package/luci-app-tinyfilemanager" ]; then
 fi
 #修改wolplus汉化
 if [ -d "./package/luci-app-wolplus" ]; then
-	PO_FILE="./package/luci-app-wolplus/po/zh_Hans/wolplus.po"	
-        sed -i 's/msgid "Wake on LAN +"\nmsgstr ""/msgid "Wake on LAN +"\nmsgstr "网络唤醒+"/' "$PO_FILE"     
+	PO_FILE="./package/luci-app-wolplus/po/zh_Hans/wolplus.po"
+        sed -i '/msgid "Wake on LAN +"/{n;s/msgstr ""/msgstr "网络唤醒+"/}' "$PO_FILE"
 	echo "修改wolplus汉化!"
 fi
