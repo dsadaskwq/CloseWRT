@@ -52,6 +52,19 @@ sed -i "s/SSID1=MT7986_AX6000_5G/SSID1=$WRT_WIFI\_5G/" ./package/mtk/drivers/wif
 if [ -n "$WRT_PACKAGE" ]; then
 	echo "$WRT_PACKAGE" >> ./.config
 fi
+#23.05专用
+if [[ $WRT_BRANCH == *"23.05"* ]]; then
+	#sed -i '/luci-app-openclash/d' ./.config
+	sed -i '/luci-app-upnp/d' ./.config
+	sed -i '/miniupnpd/d' ./.config
+
+	#echo "CONFIG_PACKAGE_luci-app-openclash=n" >> ./.config
+	echo "CONFIG_PACKAGE_luci-app-upnp=n" >> ./.config
+	echo "CONFIG_PACKAGE_miniupnpd=n" >> ./.config
+
+	echo "CONFIG_PACKAGE_luci-app-homeproxy=y" >> ./.config
+	echo "CONFIG_PACKAGE_luci-app-upnp-mtk-adjust=y" >> ./.config
+fi
 
 #修改Tiny Filemanager汉化
 if [ -d "./package/luci-app-tinyfilemanager" ]; then
