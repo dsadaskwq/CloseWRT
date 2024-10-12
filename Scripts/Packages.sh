@@ -21,8 +21,8 @@ UPDATE_PACKAGE() {
 	fi
 }
 #更新golang
-#rm -rf $(find ../feeds/packages/ -type d -regex ".*\(golang\).*")
-#git clone --depth=1 --single-branch "https://github.com/sbwml/packages_lang_golang.git" "../feeds/packages/lang/golang"
+rm -rf $(find ../feeds/packages/ -type d -regex ".*\(golang\).*")
+git clone --depth=1 --single-branch "https://github.com/sbwml/packages_lang_golang.git" "../feeds/packages/lang/golang"
 
 #UPDATE_PACKAGE "包名" "项目地址" "项目分支" "pkg/name，可选，pkg为从大杂烩中单独提取包名插件；name为重命名为包名"
 UPDATE_PACKAGE "argon" "jerrykuku/luci-theme-argon" "master"
