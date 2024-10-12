@@ -326,6 +326,7 @@ jobs:
           body: |
             源码：${{env.WRT_REPO}}            
             分支：${{env.WRT_BRANCH}}
+            luci: ${{env.WRT_FEEDS}}
             平台：${{env.WRT_TARGET}}
             设备：${{env.WRT_TYPE}}
             地址：${{env.WRT_IP}}
@@ -333,5 +334,5 @@ jobs:
             添加插件: ${{env.WRT_PACKAGE}}
             EEPROM：${{env.USE_EEPROM}}
             DOCKER: ${{env.USE_DOCKER}}
-            FEEDS: ${{env.WRT_FEEDS}}
+            
             
