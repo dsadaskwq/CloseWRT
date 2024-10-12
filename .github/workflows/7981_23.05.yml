@@ -333,5 +333,5 @@ jobs:
             添加插件: ${{env.WRT_PACKAGE}}
             EEPROM：${{env.USE_EEPROM}}
             DOCKER: ${{env.USE_DOCKER}}
-            
+            FEEDS: ${{env.WRT_FEEDS}}
             
