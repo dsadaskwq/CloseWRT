@@ -11,6 +11,12 @@ on:
         required: true
         type: choice
         options: [padavanonly/immortalwrt-mt798x-23.05]
+      FEEDS:
+        description: 'luci packages软件源'
+        default: 'openwrt-23.05'
+        required: true
+        type: choice
+        options: [openwrt-23.05, master]
       EEPROM:
         description: 'eeprom文件 and MAC'  #off不使用高功率eeprom
         required: true
@@ -77,6 +83,7 @@ jobs:
       USE_MTWIFI_CFG: ${{inputs.MTWIFI_CFG}}
       USE_EEPROM: ${{inputs.EEPROM}}
       USE_DOCKER: ${{inputs.DOCKER}}
+      WRT_FEEDS: ${{inputs.FEEDS}}
       
     steps:
       - name: 检出项目代码
@@ -187,7 +194,13 @@ jobs:
             rm -rf ./package/wwan/app/luci-app-usbmodem
             #sed -i 's/luci-app-usbmodem/luci-app-usbmodem luci-i18n-usbmodem-zh-cn/g' target/linux/mediatek/image/mt7981.mk
           fi
-          
+          if [[ $WRT_FEEDS == "master" ]] ; then
+              # 修改 feeds.conf.default 文件内容
+              # 将默认的 packages 和 luci 仓库地址替换为 -b master 
+              sed -i 's|src-git-full packages https://github.com/immortalwrt/packages.git;openwrt-23.05|src-git-full packages https://github.com/NekokeCore/immortalwrt-mt798x-packages.git|' feeds.conf.default
+              sed -i 's|src-git-full luci https://github.com/immortalwrt/luci.git;openwrt-23.05|src-git-full luci https://github.com/NekokeCore/immortalwrt-mt798x-luci.git|' feeds.conf.default
+              echo "修改feeds.conf.default源为 ${WRT_FEEDS}"
+          fi
           ./scripts/feeds update -a
           ./scripts/feeds install -a          
           
