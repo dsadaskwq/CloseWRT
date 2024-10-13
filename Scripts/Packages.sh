@@ -62,7 +62,7 @@ fi
 if [[ $WRT_BRANCH == *"23.05"* ]]; then
     #删除自带核心packages 
     rm -rf $(find ../feeds/packages/ -type d -regex ".*\(alist\|mosdns\|aliyundrive-webdav\).*")
-	UPDATE_PACKAGE "homeproxy" "immortalwrt/homeproxy" "main"
+	UPDATE_PACKAGE "homeproxy" "immortalwrt/homeproxy" "dev"
 fi
 
 
