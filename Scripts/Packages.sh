@@ -24,6 +24,17 @@ UPDATE_PACKAGE() {
 rm -rf $(find ../feeds/packages/ -type d -regex ".*\(golang\).*")
 git clone --depth=1 --single-branch "https://github.com/sbwml/packages_lang_golang.git" "../feeds/packages/lang/golang"
 
+if [[ $WRT_BRANCH == *"21.02"* ]]; then
+    #删除自带核心packages 
+    rm -rf $(find ../feeds/packages/ -type d -regex ".*\(chinadns-ng\|sing-box\|xray-core\|v2ray-core\|v2ray-plugin\|v2ray-geodata\).*")
+    UPDATE_PACKAGE "luci-app-dockerman" "lisaac/luci-app-dockerman" "master"
+fi
+if [[ $WRT_BRANCH == *"23.05"* ]]; then
+    #删除自带核心packages 
+    rm -rf $(find ../feeds/packages/ -type d -regex ".*\(sing-box\|alist\|mosdns\|aliyundrive-webdav\).*")
+    #UPDATE_PACKAGE "homeproxy" "VIKINGYFY/homeproxy" "master"
+    UPDATE_PACKAGE "luci-app-homeproxy" "kenzok8/small" "master" "pkg"    
+fi
 #UPDATE_PACKAGE "包名" "项目地址" "项目分支" "pkg/name，可选，pkg为从大杂烩中单独提取包名插件；name为重命名为包名"
 UPDATE_PACKAGE "argon" "jerrykuku/luci-theme-argon" "master"
 UPDATE_PACKAGE "kucat" "sirpdboy/luci-theme-kucat" "js"
@@ -32,8 +43,8 @@ UPDATE_PACKAGE "kucat" "sirpdboy/luci-theme-kucat" "js"
 #UPDATE_PACKAGE "nekoclash" "Thaolga/luci-app-nekoclash" "main"
 UPDATE_PACKAGE "openclash" "vernesong/OpenClash" "dev" "pkg"
 #UPDATE_PACKAGE "luci-app-passwall" "xiaorouji/openwrt-passwall" "main" "pkg"
-#UPDATE_PACKAGE "passwall" "xiaorouji/openwrt-passwall-packages" "main"
-UPDATE_PACKAGE "luci-app-passwall" "kenzok8/small" "master"
+UPDATE_PACKAGE "passwall" "xiaorouji/openwrt-passwall-packages" "main"
+#UPDATE_PACKAGE "luci-app-passwall" "kenzok8/small" "master"
 
 #UPDATE_PACKAGE "ssr-plus" "fw876/helloworld" "master"
 
@@ -56,19 +67,8 @@ UPDATE_PACKAGE "luci-app-mwan3helper-chinaroute" "padavanonly/luci-app-mwan3help
 
 
 
-if [[ $WRT_BRANCH == *"21.02"* ]]; then
-    #删除自带核心packages 
-    rm -rf $(find ../feeds/packages/ -type d -regex ".*\(chinadns-ng\|sing-box\|xray-core\|v2ray-core\|v2ray-plugin\|v2ray-geodata\).*")
-    UPDATE_PACKAGE "luci-app-dockerman" "lisaac/luci-app-dockerman" "master"
-fi
-if [[ $WRT_BRANCH == *"23.05"* ]]; then
-    #删除自带核心packages 
-    rm -rf $(find ../feeds/packages/ -type d -regex ".*\(sing-box\|alist\|mosdns\|aliyundrive-webdav\).*")
-    #UPDATE_PACKAGE "homeproxy" "VIKINGYFY/homeproxy" "master"
-    UPDATE_PACKAGE "luci-app-homeproxy" "kenzok8/small" "master" "pkg"
 
-    
-fi
+
 
 
 #更新软件包版本
