@@ -31,8 +31,10 @@ UPDATE_PACKAGE "kucat" "sirpdboy/luci-theme-kucat" "js"
 
 #UPDATE_PACKAGE "nekoclash" "Thaolga/luci-app-nekoclash" "main"
 UPDATE_PACKAGE "openclash" "vernesong/OpenClash" "dev" "pkg"
-UPDATE_PACKAGE "luci-app-passwall" "xiaorouji/openwrt-passwall" "main" "pkg"
-UPDATE_PACKAGE "passwall" "xiaorouji/openwrt-passwall-packages" "main"
+#UPDATE_PACKAGE "luci-app-passwall" "xiaorouji/openwrt-passwall" "main" "pkg"
+#UPDATE_PACKAGE "passwall" "xiaorouji/openwrt-passwall-packages" "main"
+UPDATE_PACKAGE "luci-app-passwall" "kenzok8/small" "master"
+
 #UPDATE_PACKAGE "ssr-plus" "fw876/helloworld" "master"
 
 UPDATE_PACKAGE "luci-app-aliyundrive-webdav" "messense/aliyundrive-webdav" "main" "pkg"
@@ -61,8 +63,11 @@ if [[ $WRT_BRANCH == *"21.02"* ]]; then
 fi
 if [[ $WRT_BRANCH == *"23.05"* ]]; then
     #删除自带核心packages 
-    rm -rf $(find ../feeds/packages/ -type d -regex ".*\(alist\|mosdns\|aliyundrive-webdav\).*")
-	UPDATE_PACKAGE "homeproxy" "immortalwrt/homeproxy" "dev"
+    rm -rf $(find ../feeds/packages/ -type d -regex ".*\(sing-box\|alist\|mosdns\|aliyundrive-webdav\).*")
+    #UPDATE_PACKAGE "homeproxy" "VIKINGYFY/homeproxy" "master"
+    UPDATE_PACKAGE "luci-app-homeproxy" "kenzok8/small" "master" "pkg"
+
+    
 fi
 
 
@@ -101,5 +106,5 @@ UPDATE_VERSION() {
 }
 
 #UPDATE_VERSION "软件包名" "测试版，true，可选，默认为否"
-UPDATE_VERSION "sing-box" "true"
+#UPDATE_VERSION "sing-box" "true"
 UPDATE_VERSION "aliyundrive-webdav" "true"
