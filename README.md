@@ -14,7 +14,10 @@ AABANDON源码：
 https://github.com/Aabandon/immortalwrt-mt798x.git
 
 lgs2007m:
-https://github.com/lgs2007m
+https://github.com/lgs2007m.git
+
+天灵:
+https://github.com/1715173329.git
 
 # 固件简要说明：
 
