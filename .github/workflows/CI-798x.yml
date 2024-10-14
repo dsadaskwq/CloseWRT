@@ -24,6 +24,12 @@ on:
         required: true
         default: true
         type: boolean     
+      EEPROM:
+        description: 'eeprom文件 and MAC'  #off不使用高功率eeprom
+        required: true
+        default: '360t7_eeprom' 
+        type: choice
+        options: [360t7_eeprom, nx30pro_eeprom, off_false]
       IPK:
         description: '调整IPK插件布局'
         required: true
@@ -39,7 +45,13 @@ on:
         default: 'false'
         required: true
         type: boolean
+      DOCKER:
+        description: '添加 docker容器'
+        required: true
+        default: false
+        type: boolean
       PACKAGE:
+        description: '添加插件'
         required: false
         type: string
       TEST:
@@ -72,6 +84,9 @@ jobs:
       USE_IPK: ${{inputs.IPK}}
       USE_CPU_MHZ: ${{inputs.MHZ}}
       USE_MTWIFI_CFG: ${{inputs.MTWIFI_CFG}}
+      USE_DOCKER: ${{inputs.DOCKER}}
+      USE_EEPROM: ${{inputs.EEPROM}}
+      
     steps:
       - name: 检出项目代码
         uses: actions/checkout@main
@@ -173,9 +188,13 @@ jobs:
       - name: 更新Feeds
         run: |
           cd ./wrt/
-          if [[ "${{inputs.SOURCE}}" != "padavanonly/immortalwrt-mt798x" ]]; then
-            #加入applications
-            cp -r $GITHUB_WORKSPACE/Config/applications ./package/mtk
+          # 根据源码SOURCE内容选择补丁或者操作
+          if [[ "${{inputs.SOURCE}}" == "padavanonly/immortalwrt-mt798x" ]]; then
+            #cp $GITHUB_WORKSPACE/Config/xr30_rax3000m_emmc/cmcc-xr30_xr30-emmc.patch xr30-xr30emmc_padavanonly.patch
+            #git apply xr30-xr30emmc_padavanonly.patch
+            #删除usb拨号 或者加入汉化usb拨号
+            rm -rf ./package/wwan/app/luci-app-usbmodem
+            #sed -i 's/luci-app-usbmodem/luci-app-usbmodem luci-i18n-usbmodem-zh-cn/g' target/linux/mediatek/image/mt7981.mk
           fi
           ./scripts/feeds update -a
           ./scripts/feeds install -a          
@@ -195,7 +214,7 @@ jobs:
           cat $GITHUB_WORKSPACE/Config/xr30_rax3000m/xr30_rax3000m.config >> .config                       
           # 根据 $WRT_TARGET 的值选择对应的配置文件
           if [ "$WRT_TARGET" = "MTK-7981" ]; then
-              cat $GITHUB_WORKSPACE/Config/all/7981.config >> .config
+              cat $GITHUB_WORKSPACE/Config/360t7/360t7.txt >> .config                       
           elif [ "$WRT_TARGET" = "MTK-7986" ]; then
               cat $GITHUB_WORKSPACE/Config/all/7986.config >> .config
           fi
@@ -208,16 +227,9 @@ jobs:
               sed -i 's/CONFIG_PACKAGE_lua-cjson=y/CONFIG_WIFI_NORMAL_SETTING=y/g' .config
               echo "取消mtwifi配置wifi，mtwifi=false!"
           fi
-          #加入首页cpu频率 会减慢首页加载
-          if [[ $USE_CPU_MHZ == "true" ]]; then
-             # 启用 CPU 频率的显示
-             sed -i 's/cpu_freq=""/cpu_freq="$(mhz | awk -F '\''cpu_MHz='\'' '\''{printf("%.fMHz",$2)}'\'')"/' package/emortal/autocore/files/generic/cpuinfo
-             echo "首页加入cpu频率!"
-          else
-             # 否则，禁用 CPU 频率的显示
-             sed -i "s/cpu_freq=\"\$(mhz | awk \-F 'cpu_MHz=' '{printf(\"\%.fMHz\",\$2)}')\"/cpu_freq=\"\"/g" package/emortal/autocore/files/generic/cpuinfo
-             echo "首页不显示cpu频率!"
-          fi
+          #cpu频率不显示
+          sed -i "s/cpu_freq=\"\$(mhz | awk \-F 'cpu_MHz=' '{printf(\"\%.fMHz\",\$2)}')\"/cpu_freq=\"\"/g" package/emortal/autocore/files/generic/cpuinfo
+
           #修改插件位置
           if [[ $USE_IPK == "true" ]] ; then
               #部分插件调整到status 状态
@@ -234,9 +246,23 @@ jobs:
               #部分插件调整到network 网络
               sed -i 's/services/network/g' ./package/mtk/applications/luci-app-eqos-mtk/root/usr/share/luci/menu.d/luci-app-eqos.json  || true
               echo "修改插件位置!"
-          fi
-          
+          fi        
           make defconfig
+
+      - name: 使用的高功率eeprom并固定WiFi MAC地址
+        if: env.USE_EEPROM != 'off_false'
+        run: |
+          
+          ls ./wrt/package/mtk/drivers/mt_wifi/files/mt7981-default-eeprom
+          cp ./Config/xr30_rax3000m_emmc/"$USE_EEPROM".bin ./wrt/package/mtk/drivers/mt_wifi/files/mt7981-default-eeprom/MT7981_iPAiLNA_EEPROM.bin
+          
+          
+      - name: 设置 dockerman 容器
+        if: env.USE_DOCKER == 'true'
+        run: |
+          cd ./wrt/
+          echo -e "\nCONFIG_PACKAGE_luci-app-dockerman=y" >> .config
+
 
       - name: 下载文件
         if: env.WRT_TEST != 'true'
@@ -297,3 +323,6 @@ jobs:
             设备：${{env.WRT_TYPE}}
             地址：${{env.WRT_IP}}
             密码：${{env.WRT_PW}}
+            添加插件: ${{env.WRT_PACKAGE}}
+            EEPROM：${{env.USE_EEPROM}}
+            DOCKER: ${{env.USE_DOCKER}}
