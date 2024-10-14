@@ -31,9 +31,9 @@ if [[ $WRT_BRANCH == *"21.02"* ]]; then
 fi
 if [[ $WRT_BRANCH == *"23.05"* ]]; then
     #删除自带核心packages 
-    rm -rf $(find ../feeds/packages/ -type d -regex ".*\(sing-box\|alist\|mosdns\|aliyundrive-webdav\).*")
-    #UPDATE_PACKAGE "homeproxy" "VIKINGYFY/homeproxy" "master"
-    UPDATE_PACKAGE "luci-app-homeproxy" "kenzok8/small" "master" 
+    rm -rf $(find ../feeds/packages/ -type d -regex ".*\(alist\|mosdns\|aliyundrive-webdav\).*")
+    UPDATE_PACKAGE "homeproxy" "immortalwrt/homeproxy" "master"
+    #UPDATE_PACKAGE "luci-app-homeproxy" "kenzok8/small" "master" 
 fi
 #UPDATE_PACKAGE "包名" "项目地址" "项目分支" "pkg/name，可选，pkg为从大杂烩中单独提取包名插件；name为重命名为包名"
 UPDATE_PACKAGE "argon" "jerrykuku/luci-theme-argon" "master"
