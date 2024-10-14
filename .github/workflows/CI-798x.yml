@@ -35,11 +35,6 @@ on:
         required: true
         default: true
         type: boolean
-      MHZ:
-        description: '在首页显示CPU频率'
-        required: true
-        default: false
-        type: boolean
       ADJUST:
         description: '内存低占用模式，默认关闭'
         default: 'false'
@@ -54,11 +49,7 @@ on:
         description: '添加插件'
         required: false
         type: string
-      TEST:
-        description: '仅输出配置文件，不编译固件'
-        default: 'false'
-        required: true
-        type: boolean
+      
 
 # CI权限
 permissions: write-all
@@ -80,7 +71,7 @@ jobs:
       WRT_BRANCH: ${{ inputs.SOURCE == 'VIKINGYFY/mt798x-immortalwrt' && 'main' || inputs.SOURCE == 'Aabandon/immortalwrt-mt798x' && 'test' || 'openwrt-21.02' }}
       WRT_PACKAGE: ${{inputs.PACKAGE}}
       WRT_ADJUST: ${{inputs.ADJUST}}
-      WRT_TEST: ${{inputs.TEST}}
+      WRT_TEST: false
       USE_IPK: ${{inputs.IPK}}
       USE_CPU_MHZ: ${{inputs.MHZ}}
       USE_MTWIFI_CFG: ${{inputs.MTWIFI_CFG}}
