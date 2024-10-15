@@ -202,7 +202,7 @@ jobs:
         run: |
           cd ./wrt/
           rm -rf ./tmp* ./.config*
-          cat $GITHUB_WORKSPACE/Config/xr30_rax3000m/xr30_rax3000m.config >> .config                       
+          #cat $GITHUB_WORKSPACE/Config/xr30_rax3000m/xr30_rax3000m.config >> .config                       
           # 根据 $WRT_TARGET 的值选择对应的配置文件
           if [ "$WRT_TARGET" = "MTK-7981" ]; then
               cat $GITHUB_WORKSPACE/Config/360t7/360t7.txt >> .config                       
