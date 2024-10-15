@@ -187,6 +187,12 @@ jobs:
             rm -rf ./package/wwan/app/luci-app-usbmodem
             #sed -i 's/luci-app-usbmodem/luci-app-usbmodem luci-i18n-usbmodem-zh-cn/g' target/linux/mediatek/image/mt7981.mk
           fi
+          # 修改 feeds.conf.default 文件内容
+          # 将默认的 packages 和 luci 仓库地址替换为 NekokeCore 的仓库地址
+          sed -i 's|src-git-full packages https://github.com/immortalwrt/packages.git;openwrt-21.02|src-git-full packages https://github.com/NekokeCore/immortalwrt-mt798x-packages.git;openwrt-21.02|' feeds.conf.default
+          sed -i 's|src-git-full luci https://github.com/immortalwrt/luci.git;openwrt-21.02|src-git-full luci https://github.com/NekokeCore/immortalwrt-mt798x-luci.git;openwrt-21.02|' feeds.conf.default
+          echo "修改feeds.conf.default源为 NekokeCore"
+          
           ./scripts/feeds update -a
           ./scripts/feeds install -a          
           
