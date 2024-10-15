@@ -58,7 +58,7 @@ permissions: write-all
 jobs:
   wrt_core:
     name: ${{inputs.TARGET}}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     env:
       GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
       WRT_TARGET:  ${{inputs.TARGET}}
