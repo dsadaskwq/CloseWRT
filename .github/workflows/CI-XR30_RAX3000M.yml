@@ -192,8 +192,10 @@ jobs:
           fi
           # 根据源码SOURCE内容选择补丁或者操作
           if [[ "${{inputs.SOURCE}}" == "padavanonly/immortalwrt-mt798x" ]]; then
-            cp $GITHUB_WORKSPACE/Config/xr30_rax3000m_emmc/cmcc-xr30_xr30-emmc.patch xr30-xr30emmc_padavanonly.patch
-            git apply xr30-xr30emmc_padavanonly.patch
+            #cp $GITHUB_WORKSPACE/Config/xr30_rax3000m_emmc/cmcc-xr30_xr30-emmc.patch xr30-xr30emmc_padavanonly.patch
+            #git apply xr30-xr30emmc_padavanonly.patch
+            cp $GITHUB_WORKSPACE/Config/all/xr30-xr30emmc.diff xr30-xr30emmc.diff
+            git apply xr30-xr30emmc.diff
             #删除usb拨号
             rm -rf ./package/wwan/app/luci-app-usbmodem
           fi
