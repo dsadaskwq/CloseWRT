@@ -4,13 +4,7 @@ name: CI-7981_23.05
 on:
   # 手动编译
   workflow_dispatch:
-    inputs:
-      SOURCE:
-        description: '源码'
-        default: 'padavanonly/immortalwrt-mt798x-23.05'
-        required: true
-        type: choice
-        options: [padavanonly/immortalwrt-mt798x-23.05]
+    inputs:      
       FEEDS:
         description: 'luci packages软件源'
         default: 'openwrt-23.05'
@@ -33,11 +27,6 @@ on:
         description: '修改默认WIFI名称'
         required: true
         default: 'Mediatek'
-      MTWIFI_CFG:
-        description: '使用mtwifi无线界面'
-        required: true
-        default: true
-        type: boolean     
       IPK:
         description: '调整IPK插件布局'
         required: true
@@ -79,6 +68,7 @@ jobs:
       WRT_WIFI: ${{inputs.WIFI}}
       WRT_IP: 192.168.2.1
       WRT_PW: 无
+      SOURCE: padavanonly/immortalwrt-mt798x-23.05
       WRT_REPO: https://github.com/${{inputs.SOURCE}}.git
       WRT_BRANCH: openwrt-23.05
       WRT_PACKAGE: ${{inputs.PACKAGE}}
@@ -86,7 +76,6 @@ jobs:
       WRT_TEST: ${{inputs.TEST}}
       WRT_NAND: ${{inputs.NAND}}
       USE_IPK: ${{inputs.IPK}}
-      USE_MTWIFI_CFG: ${{inputs.MTWIFI_CFG}}
       USE_EEPROM: ${{inputs.EEPROM}}
       USE_DOCKER: ${{inputs.DOCKER}}
       WRT_USB_EMMC: ${{inputs.USB_EMMC}}
@@ -239,15 +228,6 @@ jobs:
           fi
           $GITHUB_WORKSPACE/Scripts/Settings.sh
 
-
-          #取消mtwifi配置
-          if [[ $USE_MTWIFI_CFG == "false" ]] ; then
-              sed -i 's/CONFIG_PACKAGE_luci-app-mtwifi-cfg=y/CONFIG_PACKAGE_luci-app-mtk=y/g' .config
-              sed -i 's/CONFIG_PACKAGE_luci-i18n-mtwifi-cfg-zh-cn=y/CONFIG_PACKAGE_luci-i18n-mtk-zh-cn=y/g' .config
-              sed -i 's/CONFIG_PACKAGE_mtwifi-cfg=y/CONFIG_PACKAGE_wifi-profile=y/g' .config
-              sed -i 's/CONFIG_PACKAGE_lua-cjson=y/CONFIG_WIFI_NORMAL_SETTING=y/g' .config
-              echo "取消mtwifi配置wifi，mtwifi=false!"
-          fi
           #cpu频率不显示
           sed -i "s/cpu_freq=\"\$(mhz | awk \-F 'cpu_MHz=' '{printf(\"\%.fMHz\",\$2)}')\"/cpu_freq=\"\"/g" package/emortal/autocore/files/generic/cpuinfo
 
