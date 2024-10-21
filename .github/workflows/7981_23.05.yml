@@ -23,6 +23,12 @@ on:
         default: '360t7_eeprom' 
         type: choice
         options: [360t7_eeprom, nx30pro_eeprom, off_false]
+      USB_EMMC:
+        description: 'USB_EMMC机型'
+        default: 'xr30-emmc'
+        required: true
+        type: choice
+        options: [off_false, xr30, xr30-emmc]
       WIFI:
         description: '修改默认WIFI名称'
         required: true
@@ -83,6 +89,7 @@ jobs:
       USE_MTWIFI_CFG: ${{inputs.MTWIFI_CFG}}
       USE_EEPROM: ${{inputs.EEPROM}}
       USE_DOCKER: ${{inputs.DOCKER}}
+      WRT_USB_EMMC: ${{inputs.USB_EMMC}}
       WRT_FEEDS: ${{inputs.FEEDS}}
       
     steps:
@@ -187,9 +194,10 @@ jobs:
         run: |
           cd ./wrt/
           # 根据源码SOURCE内容选择补丁或者操作
-          if [[ "${{inputs.SOURCE}}" == "padavanonly/immortalwrt-mt798x" ]]; then
-            #cp $GITHUB_WORKSPACE/Config/xr30_rax3000m_emmc/cmcc-xr30_xr30-emmc.patch xr30-xr30emmc_padavanonly.patch
-            #git apply xr30-xr30emmc_padavanonly.patch
+          if [[ $WRT_USB_EMMC == "xr30*" ]]; then
+            cp $GITHUB_WORKSPACE/Config/all/add-xr30-xr30emmc-23.05.patch add-xr30-xr30emmc-23.05.patch
+            git apply add-xr30-xr30emmc-23.05.patch
+            
             #删除usb拨号 或者加入汉化usb拨号
             rm -rf ./package/wwan/app/luci-app-usbmodem
             #sed -i 's/luci-app-usbmodem/luci-app-usbmodem luci-i18n-usbmodem-zh-cn/g' target/linux/mediatek/image/mt7981.mk
@@ -217,9 +225,18 @@ jobs:
       - name: 自定义设置
         run: |
           cd ./wrt/
-          rm -rf ./tmp* ./.config*
-          cat $GITHUB_WORKSPACE/Config/360t7/360t7.txt >> .config                       
-          
+          rm -rf ./tmp* ./.config*      
+          cat $GITHUB_WORKSPACE/Config/360t7/360t7.txt >> .config 
+          if [[ $WRT_USB_EMMC == "xr30" ]] ; then
+              rm -rf ./tmp* ./.config*
+              catcat $GITHUB_WORKSPACE/Config/xr30_rax3000m/xr30_rax3000m.config >> .config                       
+              echo "使用xr30配置文件"
+          fi
+          if [[ $WRT_USB_EMMC == "xr30_emmc" ]] ; then
+              rm -rf ./tmp* ./.config*
+              catcat $GITHUB_WORKSPACE/Config/xr30_rax3000m_emmc/xr30_rax3000m_emmc.config >> .config                       
+              echo "使用xr30_emmc配置文件"
+          fi
           $GITHUB_WORKSPACE/Scripts/Settings.sh
 
 
