@@ -182,7 +182,7 @@ jobs:
         run: |
           cd ./wrt/
           # 根据源码SOURCE内容选择补丁或者操作
-          if [[ $WRT_USB_EMMC == "xr30*" ]]; then
+          if [[ $WRT_USB_EMMC != "off_false" ]]; then
             cp $GITHUB_WORKSPACE/Config/all/add-xr30-xr30emmc-23.05.patch add-xr30-xr30emmc-23.05.patch
             git apply add-xr30-xr30emmc-23.05.patch
             
@@ -217,12 +217,11 @@ jobs:
           cat $GITHUB_WORKSPACE/Config/360t7/360t7.txt >> .config 
           if [[ $WRT_USB_EMMC == "xr30" ]] ; then
               rm -rf ./tmp* ./.config*
-              catcat $GITHUB_WORKSPACE/Config/xr30_rax3000m/xr30_rax3000m.config >> .config                       
+              cat $GITHUB_WORKSPACE/Config/xr30_rax3000m/xr30_rax3000m.config >> .config                       
               echo "使用xr30配置文件"
-          fi
-          if [[ $WRT_USB_EMMC == "xr30_emmc" ]] ; then
+          elif [[ $WRT_USB_EMMC == "xr30-emmc" ]] ; then
               rm -rf ./tmp* ./.config*
-              catcat $GITHUB_WORKSPACE/Config/xr30_rax3000m_emmc/xr30_rax3000m_emmc.config >> .config                       
+              cat $GITHUB_WORKSPACE/Config/xr30_rax3000m_emmc/xr30_rax3000m_emmc.config >> .config                       
               echo "使用xr30_emmc配置文件"
           fi
           $GITHUB_WORKSPACE/Scripts/Settings.sh
