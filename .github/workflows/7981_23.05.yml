@@ -69,7 +69,7 @@ jobs:
       WRT_IP: 192.168.2.1
       WRT_PW: 无
       SOURCE: padavanonly/immortalwrt-mt798x-23.05
-      WRT_REPO: https://github.com/${{inputs.SOURCE}}.git
+      WRT_REPO: https://github.com/$WRT_FEEDS.git
       WRT_BRANCH: openwrt-23.05
       WRT_PACKAGE: ${{inputs.PACKAGE}}
       WRT_ADJUST: ${{inputs.ADJUST}}
