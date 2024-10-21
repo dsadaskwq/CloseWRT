@@ -4,8 +4,9 @@
 sed -i "s/luci-theme-bootstrap/luci-theme-$WRT_THEME/g" $(find ./feeds/luci/collections/ -type f -name "Makefile")
 #修改immortalwrt.lan关联IP
 sed -i "s/192\.168\.[0-9]*\.[0-9]*/$WRT_IP/g" $(find ./feeds/luci/modules/luci-mod-system/ -type f -name "flash.js")
-#添加编译日期标识
-##sed -i "s/(\(luciversion || ''\))/(\1) + (' \/ $WRT_CI-$WRT_DATE')/g" $(find ./feeds/luci/modules/luci-mod-status/ -type f -name "10_system.js")
+#添加编译日期标识   获取当前日期部分（例如 '24.10.20'）
+WRT_DATE_ONLY=$(TZ=UTC-8 date +"%y.%m.%d")
+sed -i "s/(\(luciversion || ''\))/(\1) + (' \/ $WRT_DATE_ONLY')/g" $(find ./feeds/luci/modules/luci-mod-status/ -type f -name "10_system.js")
 #删除首页DDNS的示例，加快加载
 sed -i '/myddns_ipv4/,$d' ./feeds/packages/net/ddns-scripts/files/etc/config/ddns
 echo "删除DDNS示例!"
